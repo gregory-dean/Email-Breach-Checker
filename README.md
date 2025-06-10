@@ -93,15 +93,3 @@ The script is designed to:
 | `output/summary_results.csv` | Results after scan |
 | `output/failed_emails.log` | Emails that failed to process |
 
----
-
-## ⚠️ Legal Notice
-
-This tool is for **educational and authorized audit purposes only**.  
-You must have permission to check any emails scanned with this tool.
-
----
-
-## ✨ Credits
-
-Created by **X3N0** for the AI Literacy Challenge.
