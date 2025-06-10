@@ -1,0 +1,4 @@
+test@example.com
+john.doe@company.com
+not-an-email
+
