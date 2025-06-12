@@ -43,7 +43,7 @@ echo "HIBP_API_KEY=your_hibp_api_key" > .env
 2. Run the tool (after installing or from source):
 
 ```bash
-email-breach-checker
+python3 email_breach_checker_V2.py
 ```
 
 3. Follow the interactive menu to select or enter your file path
@@ -95,6 +95,7 @@ The script is designed to:
 | `email_breach_checker/cli.py` | CLI implementation |
 | `requirements.txt` | List of required packages |
 | `emails.txt` | Example email list |
+| `email_breach_checker_V2.py` | Updated standalone script |
 | `README.md` | This file |
 | `setup.py` | Packaging script |
 | `output/summary_results.csv` | Results after scan |
