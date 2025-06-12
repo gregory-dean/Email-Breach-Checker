@@ -9,10 +9,18 @@ import sys
 from pathlib import Path
 from typing import List
 from colorama import Fore, init
+from dotenv import load_dotenv
+
 init(autoreset=True)
 
 # Configuration
-API_KEY = 'API key here'
+load_dotenv()
+
+def load_api_key() -> str:
+    """Load the HIBP API key from environment variables or .env file."""
+    return os.getenv("HIBP_API_KEY", "")
+
+API_KEY = load_api_key()
 API_URL = 'https://haveibeenpwned.com/api/v3/breachedaccount/'
 HEADERS = {
     'hibp-api-key': API_KEY,
@@ -88,10 +96,8 @@ def write_grouped_summary(email: str, breaches):
             writer.writerow([email, 0, "", "", "", "", "", "", ""])
 
 def check_email(email: str):
-    # Warn the user if the API key is still the placeholder value
-    placeholder_keys = ["API key here", "your_hibp_api_key_here"]
-    if not API_KEY or any(p.lower() in API_KEY.lower() for p in placeholder_keys):
-        print(Fore.RED + "❌ API key is missing or invalid. Please update it in the script.")
+    if not API_KEY:
+        print(Fore.RED + "❌ API key is missing. Set HIBP_API_KEY in your environment or .env file.")
         sys.exit(1)
 
     max_retries = 3

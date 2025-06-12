@@ -5,10 +5,12 @@ import csv
 import re
 from typing import List
 from colorama import Fore, Style, init
+from dotenv import load_dotenv
 init(autoreset=True)
 
 # -------------------- Configuration --------------------
-API_KEY = 'API key here'  # Replace with your real HIBP API key
+load_dotenv()
+API_KEY = os.getenv('HIBP_API_KEY', '')  # Set in environment or .env
 API_URL = 'https://haveibeenpwned.com/api/v3/breachedaccount/'
 
 HEADERS = {
@@ -66,6 +68,8 @@ def write_to_csv(email: str, breaches):
 
 def check_email(email: str):
     """Calls HIBP API, handles retries and logging."""
+    if not API_KEY:
+        raise ValueError("HIBP_API_KEY environment variable not set")
     max_retries = 3
     for attempt in range(max_retries):
         response = requests.get(f"{API_URL}{email}", headers=HEADERS, params={"truncateResponse": False})
