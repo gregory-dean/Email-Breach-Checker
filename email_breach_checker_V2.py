@@ -5,6 +5,7 @@ import csv
 import time
 import requests
 import socket
+import sys
 from pathlib import Path
 from typing import List
 from colorama import Fore, init
@@ -87,9 +88,11 @@ def write_grouped_summary(email: str, breaches):
             writer.writerow([email, 0, "", "", "", "", "", "", ""])
 
 def check_email(email: str):
-    if not API_KEY or "your_hibp_api_key_here" in API_KEY:
+    # Warn the user if the API key is still the placeholder value
+    placeholder_keys = ["API key here", "your_hibp_api_key_here"]
+    if not API_KEY or any(p.lower() in API_KEY.lower() for p in placeholder_keys):
         print(Fore.RED + "❌ API key is missing or invalid. Please update it in the script.")
-        exit(1)
+        sys.exit(1)
 
     max_retries = 3
     for attempt in range(max_retries):
@@ -111,6 +114,8 @@ def check_email(email: str):
             log_failed_email(email, response.status_code)
             print(Fore.RED + f"Error checking {email}: HTTP {response.status_code}")
             return None
+    log_failed_email(email, 429)
+    print(Fore.RED + f"Error checking {email}: HTTP 429 - Too Many Requests")
     return None
 
 def scan_emails(emails: List[str]):
