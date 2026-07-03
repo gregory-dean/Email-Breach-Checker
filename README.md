@@ -1,116 +1,97 @@
-# 🔐 Email Breach Checker (EBC) by X3N0
+# Email Breach Checker
 
-**Email Breach Checker (EBC)** is a Python-based CLI tool that checks if any emails from a `.csv` file have been exposed in known data breaches using the Have I Been Pwned (HIBP) API.
+Check email addresses from a file against the [Have I Been Pwned](https://haveibeenpwned.com/) API and write grouped summary results to CSV.
 
----
+## Requirements
 
-## 🚀 Features
-
-- 🎨 Stylized ASCII menu interface
-- 📂 Auto-searches Desktop/Downloads for `.csv` files
-- ✅ Smart validation for email format and input files
-- 🧠 Graceful handling of empty, invalid, or malformed CSVs
-- 🧹 Skips duplicates and filters junk data
-- 💾 Saves grouped summary results in `output/summary_results.csv`
-- 🧱 Logs failed email lookups to `output/failed_emails.log`
-- 🌐 API rate-limit friendly with built-in delay
-
----
-
-## 📦 Requirements
-
-- Python 3.6+
+- Python 3.10+
 - Internet connection
-- Free HIBP API key ([get one here](https://haveibeenpwned.com/API/Key))
+- HIBP API key ([request one here](https://haveibeenpwned.com/API/Key))
 
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Create a `.env` file with your API key:
+## Installation
 
 ```bash
-echo "HIBP_API_KEY=your_hibp_api_key" > .env
+pip install .
 ```
 
----
-
-## 📂 How to Use
-
-1. Place your `.csv` file with email addresses on your **Desktop** or **Downloads**
-2. Run the tool (after installing or from source):
+For development:
 
 ```bash
-python3 email_breach_checker_V2.py
+pip install -e ".[dev]"
 ```
 
-3. Follow the interactive menu to select or enter your file path
-4. Review scan summary in terminal and detailed results in:
+## Configuration
 
-```
-output/summary_results.csv
-```
-
----
-
-## 📄 Output Format
-
-Each email scanned will show:
-- Number of breaches found
-- Names and domains of breached services
-- Dates and verified status
-- Type of compromised data (e.g., emails, passwords)
-- Truncated descriptions of each breach
-
----
-
-## 🔧 Example Input
-
-Example contents of a `.csv`:
-```
-test@example.com
-admin@yourcompany.com
-someuser@gmail.com
-```
-
----
-
-## ❌ Invalid Input Handling
-
-The script is designed to:
-- Skip malformed or duplicate emails
-- Warn if file is empty, missing, or not `.csv`
-- Handle corrupt or non-CSV files
-- Retry on rate-limit (429) errors
-- Warn on internet/API key issues
-
----
-
-## 📁 Files
-
-| File | Description |
-|------|-------------|
-| `email_breach_checker/cli.py` | CLI implementation |
-| `requirements.txt` | List of required packages |
-| `emails.txt` | Example email list |
-| `email_breach_checker_V2.py` | Updated standalone script |
-| `README.md` | This file |
-| `setup.py` | Packaging script |
-| `output/summary_results.csv` | Results after scan |
-| `output/failed_emails.log` | Emails that failed to process |
-
----
-
-## 📦 Building a Debian Package
-
-You can create a `.deb` package using `stdeb`:
+Set your API key via environment variable or `.env` file:
 
 ```bash
-pip install stdeb
-python3 setup.py --command-packages=stdeb.command bdist_deb
+export HIBP_API_KEY=your_api_key
 ```
 
-The resulting package will be placed in the `deb_dist/` directory.
+Or copy `.env.example` to `.env` and edit it.
 
+## Usage
+
+```bash
+email-breach-checker INPUT_FILE [options]
+```
+
+Arguments:
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `INPUT_FILE` | Path to `.txt` or `.csv` file with emails | required |
+| `--output PATH` | Summary CSV destination | `results.csv` |
+| `--failed-log PATH` | Log file for failed lookups | `failed_emails.log` |
+| `--delay SECONDS` | Pause between requests | `6.0` |
+| `--api-key KEY` | Override `HIBP_API_KEY` | from env |
+| `--quiet` | Suppress per-email progress lines | off |
+| `--version` | Print version and exit | |
+| `--help` | Show help and exit | |
+
+Example:
+
+```bash
+email-breach-checker examples/emails.txt --output results.csv
+```
+
+You can also run as a module:
+
+```bash
+python -m email_breach_checker examples/emails.txt
+```
+
+## Input Formats
+
+**Text (`.txt`)**: one email address per line.
+
+**CSV (`.csv`)**: emails are extracted from all cells using pattern matching. Duplicates are removed.
+
+See [examples/emails.txt](examples/emails.txt) for a sample text input file.
+
+## Output
+
+The summary CSV contains one row per email with breach count, titles, domains, dates, verification status, pwn counts, compromised data types, and truncated descriptions.
+
+Failed lookups are appended to the failed-log file with the HTTP status and error detail.
+
+Exit codes:
+
+| Code | Meaning |
+|------|---------|
+| `0` | All lookups succeeded |
+| `1` | One or more lookups failed |
+| `2` | Usage error (missing file, invalid arguments, missing API key) |
+
+## Development
+
+Run tests and lint:
+
+```bash
+pytest
+ruff check src tests
+```
+
+## License
+
+MIT. See [LICENSE](LICENSE).
